@@ -1,0 +1,32 @@
+,,,
+Step,Opus Node Type,Action / Logic,Output Data
+1. Intake Form,Input Node,User submits: 1),video_url
+,,video_url,","
+,,", 2)",user_goal
+,,user_goal,","
+,,"(Option 1, 2, or 3), and 3) (Optional)",reference_url
+,,reference_url,
+,,.,
+2. Initial Analysis,External Service Node (or Code Node),Call to Gemini API. This executes the logic from your,analysis_json
+,,main_opus_handler.py,(The structured output from
+,,script. It passes the three input variables to the script.,VideoAnalysisResult
+,,,)
+3. High-Quality Check,Decision Node (,Logic: Check the score:,Route: A (Flagged) or B (Clear)
+,If,IF analysis_json.overall_score < 5,
+,statement),(Video quality is poor).,
+4. Human Review,Human Review Node (Route A),"If flagged, the workflow pauses, asking a team member to manually review the suggestion for empathy and clarity.",human_review_status
+5. Final Report Generation,Code Node (or External Service) (Route B / After Human Review),Secondary Gemini Call. This node takes the,final_report_text
+,,analysis_json,
+,,and the,
+,,user_goal,
+,,", and uses the specialized prompt (from the Report Template section) to write the final, human-readable report.",
+6. Audit Log,Code Node,"Compiles all data: initial inputs, the raw",audit_artifact_json
+,,analysis_json,
+,,", and the",
+,,final_report_text,
+,,"into a single, traceable JSON object.",
+7. Delivery,Export Node (Email or Google Sheets),Sends the,Success/Completion
+,,final_report_text,
+,,to the user's email address and saves the,
+,,audit_artifact_json,
+,,to a Google Sheet (for proof of audit).,
